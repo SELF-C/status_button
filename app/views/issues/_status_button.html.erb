@@ -1,7 +1,7 @@
 <%
 	if StatusButton::Hooks.is_open?(@project)
 %>
-<tr><th class="status"><%= l(:field_status) + "-->" %></th><td class="status" colspan=3><%
+<tr><th class="status"></th><td class="status" colspan=3><%
 # Returns an array of statuses that user is able to apply
 def all_new_statuses_allowed_to(issue)
 	user = User.current
@@ -29,10 +29,14 @@ setting = Setting["plugin_#{plugin.id}"] || plugin.settings[:default]
 allowed_statuses = setting[:check_all_status] ? all_new_statuses_allowed_to(@issue) : @issue.new_statuses_allowed_to()
 for status in @issue.tracker.issue_statuses
 	if @issue.status == status
-		%><b>[<%= status.name %>]</b>&emsp;<%
+		%><span class="stb_now"><%= status.name %></span>&emsp;<%
 	else
-		%>[<%= link_to_if allowed_statuses.include?(status),
-						status.name, "javascript:make_status(#{status.id})" %>]&emsp;<%
+		%><%
+			if allowed_statuses.include?(status)
+				%><span class="stb_enabled" onclick="javascript:make_status(<%= status.id %>)"> <%= status.name %></span>&emsp;<%
+			else
+				%><span class="stb_disabled"> <%= status.name %></span>&emsp;<%
+			end
 	end
 end
 %></td></tr>
@@ -40,3 +44,4 @@ end
 <%
 	end
 %>
+
